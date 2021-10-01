@@ -1,0 +1,40 @@
+variables:
+  COMPOSE_PROJECT_NAME: $CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME-$CI_COMMIT_BRANCH-$CI_COMMIT_SHA
+
+.set_environment:
+  allow_failure: false
+  variables:
+    GIT_DEPTH: '3'
+  before_script:
+    - source ~/server_env
+    - export SERVER_ENV_FILE="$SERVER_ENV_ROOT/$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME/$CI_COMMIT_BRANCH"
+    - export PROJECT_PATH="$SERVER_PROJECT_ROOT/$CI_PROJECT_NAMESPACE-$CI_PROJECT_NAME/$CI_COMMIT_BRANCH"
+
+    - if [ -e ".env.$CI_COMMIT_BRANCH" ] ; then mv ".env.$CI_COMMIT_BRANCH" ".env" ; fi
+    - echo "COMPOSE_PROJECT_NAME=$(echo "$COMPOSE_PROJECT_NAME" | tr '[:upper:]' '[:lower:]')" >> ".env"
+    - echo "CI_COMMIT_SHA=$CI_COMMIT_SHA" >> ".env"
+    - echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH" >> ".env"
+    - cp ".env" ".env.original"
+    - cat "$SERVER_ENV_FILE" >> ".env"
+    - source ".env"
+
+.build_docker:
+  extends: .set_environment
+  stage: build
+  script:
+    - docker-compose config -q
+    - docker-compose build
+
+.deploy_docker:
+  extends: .set_environment
+  stage: deploy
+  script:
+    - pushd "$PROJECT_PATH"
+    - if [ -e "docker-compose.yml" ] ; then ( source .env ; docker-compose down ) ; fi
+    - popd
+
+    - cp docker-compose.yml .env.original .env ci/wait-for-healthy.sh "$PROJECT_PATH"
+    - cd "$PROJECT_PATH"
+
+    - docker-compose up --no-build -d
+    - ./wait-for-healthy.sh "$COMPOSE_PROJECT_NAME"

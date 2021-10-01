@@ -1,0 +1,24 @@
+{
+  "exclude": [
+    ".eslintrc.js ",
+    ".lintstagedrc.js",
+    "documentation/", 
+    "tests", 
+    "src/databases/mongodb/model.js",
+    "src/helpers/email-helper.js",
+    "src/services/token.js",
+    "src/startup",
+    "src/mailer"
+  ],
+  "extension": [
+    ".js"
+  ],
+  "cache": true,
+  "all": true,
+  "default-excludes": true,
+  "check-coverage": true,
+  "lines": 80,
+  "statements": 80,
+  "functions": 80,
+  "branches": 80
+}

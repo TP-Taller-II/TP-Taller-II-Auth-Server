@@ -1,0 +1,13 @@
+.test_node:
+  allow_failure: false
+  variables:
+    GIT_DEPTH: '3'
+  image: node:12-slim
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules
+  before_script:
+    - npm ci
