@@ -8,58 +8,30 @@ const usersSignInGoogle = require('./users/sign_in_google');
 const patchMe = require('./users/patch_me');
 const getMe = require('./users/get_me');
 const getById = require('./users/get_by_id');
-const createFileShareRequest = require('./users/create_file_share_request');
-const getFileShareAcceptRequest = require('./users/get_file_share_accept_request');
-const postFile = require('./files/post');
-const list = require('./files/list');
-const getFile = require('./files/get_file');
-const deleteFile = require('./files/delete_file');
-const deleteDirectory = require('./files/delete_directory');
-const getTree = require('./files/get_tree');
 
 module.exports = {
 	paths: {
 		'/users/signUp': {
-			...usersSignUp
+			...usersSignUp,
 		},
 		'users/SignIn': {
-			...usersSignIn
+			...usersSignIn,
 		},
 		'/users/signUp/google': {
-			...usersSignUpGoogle
+			...usersSignUpGoogle,
 		},
 		'users/SignIn/google': {
-			...usersSignInGoogle
+			...usersSignInGoogle,
 		},
 		'users/signOut': {
-			...usersSignOut
+			...usersSignOut,
 		},
 		'users/me': {
 			...patchMe,
-			...getMe
+			...getMe,
 		},
 		'users/{id}': {
-			...getById
+			...getById,
 		},
-		'users/fileShareRequest': {
-			...createFileShareRequest
-		},
-		'users/fileShareAccept/Request/:id': {
-			...getFileShareAcceptRequest
-		},
-		'files/': {
-			...postFile,
-			...list
-		},
-		'files/file': {
-			...getFile,
-			...deleteFile
-		},
-		'files/tree': {
-			...getTree
-		},
-		'files/directory': {
-			...deleteDirectory
-		}
-	}
+	},
 };

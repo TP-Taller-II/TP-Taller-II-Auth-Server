@@ -8,34 +8,26 @@ const options = {
 	info: {
 		title: 'API documentation',
 		version: '1.0.0',
-		description: 'API documentation'
+		description: 'API documentation',
 	},
 	servers: [
 		{
-			url: 'localhost:8080/api'
-		}
+			url: 'localhost:8080/api',
+		},
 	],
 	tags: [
 		{
 			name: 'Users',
-			description: 'Related with users'
+			description: 'Related with users',
 		},
-		{
-			name: 'Files',
-			description: 'Related with files'
-		},
-		{
-			name: 'ShareRequest',
-			description: 'Related with share requests'
-		}
 	],
 	security: [
 		{
-			bearerAuth: []
-		}
+			bearerAuth: [],
+		},
 	],
 	...components,
-	...paths
+	...paths,
 };
 
 module.exports = options;
