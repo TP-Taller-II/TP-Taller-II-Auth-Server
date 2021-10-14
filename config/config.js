@@ -1,7 +1,8 @@
 'use strict';
 
 const env = process.env.NODE_ENV || 'dev'; // 'dev' or 'test'
-
+console.log("Config Environment: " + env); // Debugeando JS
+ 
 const defaultConfig = {
 	marketData: {
 		load: true,
