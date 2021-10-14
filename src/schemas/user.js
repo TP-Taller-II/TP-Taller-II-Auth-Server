@@ -13,14 +13,6 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: [true, 'A surname is required'],
 		},
-		binanceApiKey: {
-			type: String,
-			required: [true, 'A Binance API-Key is required'],
-		},
-		binanceApiSecret: {
-			type: String,
-			required: [true, 'A Binance API-Secret is required'],
-		},
 		provider: {
 			type: String,
 			enum: ['email', 'google'],
@@ -47,17 +39,6 @@ const userSchema = new mongoose.Schema(
 		},
 		accessToken: {
 			type: String,
-		},
-		canShare: {
-			type: Array,
-			required: true,
-			default: [],
-
-		},
-		canRead: {
-			type: Array,
-			required: true,
-			default: [],
 		},
 	},
 	{

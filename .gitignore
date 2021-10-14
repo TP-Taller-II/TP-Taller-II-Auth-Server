@@ -1,5 +1,6 @@
 # CONFIG PARA ENVIROMENTAL VARIABLES
 config/default.json
+.env
 
 # Logs
 logs
@@ -103,3 +104,5 @@ dist
 .tern-port
 
 .idea
+/.vs/TP-Taller-II-Auth-Server/v16
+/.vs

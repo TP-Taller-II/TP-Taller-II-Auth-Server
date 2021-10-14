@@ -14,7 +14,7 @@ services:
       - mongo
     restart: unless-stopped
     ports:
-      - "${APP_EXTERNAL_PORT}:80"
+      - "${PORT}:80"
     environment:
       PORT: 80
       NODE_ENV: "docker"

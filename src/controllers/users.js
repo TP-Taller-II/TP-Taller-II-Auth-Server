@@ -8,11 +8,15 @@ const tokenServices = new TokenServices();
 const signUp = async (req, res) => {
 
 	try {
-
+		console.log("Signup1")
 		const userData = req.body;
+		console.log("Signup2")
 		const { password, ...user } = await users.createUser(userData);
+		console.log("Signup3")
 		const token = await tokenServices.generateToken(user);
+		console.log("Signup4")
 		await users.updateToken(user._id, token);
+		console.log("Signup5")
 
 		res.header('x-auth-token', token)
 			.status(STATUS_CODES.OK)

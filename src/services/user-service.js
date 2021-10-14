@@ -85,19 +85,6 @@ const sendEmail = (shareRequestId, guestEmail, hostEmail, fileName) => {
 	return mailer.sendInvitationEmail(shareRequestId, guestEmail, hostEmail, fileName);
 };
 
-const getAuth = async userId => {
-	console.log(`UserService - getAuth - user: ${userId}.`);
-
-	const user = await getUserById(userId);
-
-	const userKeys = {
-		apiKey: user.binanceApiKey,
-		secret: user.binanceApiSecret,
-	};
-
-	return userKeys;
-};
-
 
 module.exports = {
 	createUser,
@@ -111,5 +98,4 @@ module.exports = {
 	updateGuest,
 	sendEmail,
 	getUsersByEmails,
-	getAuth,
 };
