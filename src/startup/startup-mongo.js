@@ -6,10 +6,11 @@ const config = require('../../config/config');
 
 console.log("Reading Config"); // Debugeando JS + Heroku
 const { host, port } = config.db;
-console.log("Host: " + host + " Port: " + port); // Debugeando JS + Heroku
+uri = `mongodb://${host}:${port}/app`
+uri = "mongodb+srv://ubademy-g2:" + process.env.MONGO_DB_PASS + "@auth-server.i7qbi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 module.exports = () => {
-	mongoose.connect(`mongodb://${host}:${port}/app`, {
+	mongoose.connect(uri, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 		useFindAndModify: false,

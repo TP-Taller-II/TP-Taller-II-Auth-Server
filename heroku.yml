@@ -1,4 +1,0 @@
-build:
-  docker:
-    mongo: Dockerfile.mongo
-    web: Dockerfile
