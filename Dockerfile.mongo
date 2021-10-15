@@ -7,6 +7,7 @@
 # Pull base image.
 FROM ubuntu
 
+RUN apt-get update
 RUN apt-get install gnupg
 
 # Install MongoDB.
