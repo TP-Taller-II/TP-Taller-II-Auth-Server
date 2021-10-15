@@ -5,7 +5,15 @@ const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
 
+function validatePrivateKey(req) {
+	if (process.env.PRIVATE_KEY === req.header('API_KEY'))
+		return true;
+	return false;
+}
+
 const signUp = async (req, res) => {
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
 
 	try {
 		console.log("Signup1")
@@ -28,7 +36,8 @@ const signUp = async (req, res) => {
 };
 
 const signIn = async (req, res) => {
-	console.log('signIn');
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
 
 	try {
 		const { email, password: passwordToValidate } = req.body;
@@ -71,11 +80,16 @@ const getUser = async (id, res) => {
 };
 
 const getUserById = (req, res) => {
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
+
 	const { id } = req.params;
 	return getUser(id, res);
 };
 
 const getMe = async (req, res) => {
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
 
 	const { session: { _id } } = req;
 
@@ -90,6 +104,8 @@ const getMe = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
 
 	const { _id } = req.session;
 	const { password } = req.body;
@@ -117,6 +133,8 @@ const updateUser = async (req, res) => {
 };
 
 const oauthSignUp = async (req, res) => {
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
 
 	try {
 
@@ -135,6 +153,8 @@ const oauthSignUp = async (req, res) => {
 };
 
 const oauthSignIn = async (req, res) => {
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
 
 	try {
 		const { email } = req.body;
@@ -157,6 +177,8 @@ const oauthSignIn = async (req, res) => {
 };
 
 const signOut = async (req, res) => {
+	if (!validatePrivateKey(req))
+		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
 
 	try {
 
