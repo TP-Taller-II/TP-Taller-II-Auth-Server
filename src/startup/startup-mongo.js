@@ -6,6 +6,7 @@ const config = require('../../config/config');
 
 console.log("Reading Config"); // Debugeando JS + Heroku
 const { host, port } = config.db;
+console.log("Host: " + host + " Port: " + port); // Debugeando JS + Heroku
 
 module.exports = () => {
 	mongoose.connect(`mongodb://${host}:${port}/app`, {
