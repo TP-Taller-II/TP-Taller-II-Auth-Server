@@ -24,7 +24,7 @@ VOLUME ["/data/db"]
 WORKDIR /data
 
 # Define default command.
-RUN service mongod start
+RUN systemctl start mongod
 
 # Expose ports.
 #   - 27017: process
