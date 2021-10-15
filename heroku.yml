@@ -2,3 +2,7 @@ build:
   docker:
     mongo: Dockerfile.mongo
     web: Dockerfile
+run:
+  docker:
+    mongo: mongod
+    web: npm run
