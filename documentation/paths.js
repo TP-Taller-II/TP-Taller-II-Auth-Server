@@ -3,34 +3,26 @@
 const usersSignUp = require('./users/sign_up');
 const usersSignIn = require('./users/sign_in');
 const usersSignOut = require('./users/sign_out');
-const usersSignUpGoogle = require('./users/sign_up_google');
-const usersSignInGoogle = require('./users/sign_in_google');
 const patchMe = require('./users/patch_me');
 const getMe = require('./users/get_me');
 const getById = require('./users/get_by_id');
 
 module.exports = {
 	paths: {
-		'/users/signUp': {
+		'/v1/users/signUp': {
 			...usersSignUp,
 		},
-		'users/SignIn': {
+		'/v1/users/SignIn': {
 			...usersSignIn,
 		},
-		'/users/signUp/google': {
-			...usersSignUpGoogle,
-		},
-		'users/SignIn/google': {
-			...usersSignInGoogle,
-		},
-		'users/signOut': {
+		'/v1/users/signOut': {
 			...usersSignOut,
 		},
-		'users/me': {
+		'/v1/users/me': {
 			...patchMe,
 			...getMe,
 		},
-		'users/{id}': {
+		'/v1/users/{id}': {
 			...getById,
 		},
 	},
