@@ -10,4 +10,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 12.x
-      - run: npm run test-ci
+      - name: Install dependencies
+        run: npm install
+      - name: Runt Linters
+        run: npm run test-ci
