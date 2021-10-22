@@ -2,7 +2,7 @@ name: Linters
 on: [push]
 
 jobs:
-  linter:
+  linters:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
