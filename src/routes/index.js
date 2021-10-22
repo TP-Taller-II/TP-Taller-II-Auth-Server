@@ -13,8 +13,10 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(morgan('dev'));
 
+const adminUsers = require('./admin-users');
 const users = require('./users');
 
+router.use('/admin', adminUsers);
 router.use('/users', users);
 
 module.exports = router;

@@ -16,7 +16,7 @@ class TokenServices {
 
 		const payload = jwt.verify(token, secret);
 		const { _id } = payload;
-		const userModel = new Model('Users', userSchema);
+		const userModel = new Model('users', userSchema);
 
 		if (new Date(payload.expirationDate) <= new Date()) {
 			await userServices.removeToken(_id);

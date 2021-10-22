@@ -5,7 +5,7 @@ const { userSchema } = require('../schemas/index');
 const Model = require('../databases/mongodb/model');
 
 
-const userModel = new Model('Users', userSchema);
+const userModel = new Model('users', userSchema);
 
 const getEncriptedPassword = async password => {
 	const salt = await Bcrypt.genSalt(10);
@@ -23,6 +23,10 @@ const createUser = async user => {
 
 const validateCredentials = (passwordToValidate, password) => {
 	return Bcrypt.compare(passwordToValidate, password);
+};
+
+const getAllUsers = () => {
+	return userModel.find();
 };
 
 const getUsersByEmails = email => {
@@ -74,4 +78,5 @@ module.exports = {
 	updateToken,
 	removeToken,
 	getUsersByEmails,
+	getAllUsers,
 };
