@@ -6,7 +6,6 @@ const STATUS_CODES = require('../utils/status-codes.json');
 const tokenServices = new TokenServices();
 
 const signUp = async (req, res) => {
-
 	try {
 		const userData = req.body;
 		const { password, ...user } = await users.createUser(userData);

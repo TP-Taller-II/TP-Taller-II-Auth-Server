@@ -9,20 +9,20 @@ const getById = require('./users/get_by_id');
 
 module.exports = {
 	paths: {
-		'/v1/users/signUp': {
+		'/auth-server/v1/users/signUp': {
 			...usersSignUp,
 		},
-		'/v1/users/SignIn': {
+		'/auth-server/v1/users/SignIn': {
 			...usersSignIn,
 		},
-		'/v1/users/signOut': {
+		'/auth-server/v1/users/signOut': {
 			...usersSignOut,
 		},
-		'/v1/users/me': {
+		'/auth-server/v1/users/me': {
 			...patchMe,
 			...getMe,
 		},
-		'/v1/users/{id}': {
+		'/auth-server/v1/users/{id}': {
 			...getById,
 		},
 	},

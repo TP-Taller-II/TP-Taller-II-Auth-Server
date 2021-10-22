@@ -1,13 +1,14 @@
 'use strict';
 
-console.log("Starting Mongo" ); // Debugeando JS + Heroku
+console.log('Starting Mongo');
 const mongoose = require('mongoose');
 const config = require('../../config/config');
 
-console.log("Reading Config"); // Debugeando JS + Heroku
-const { host, port } = config.db;
-let uri = `mongodb://${host}:${port}/app`
-uri = "mongodb+srv://ubademy-g2:" + process.env.MONGO_DB_PASS + "@auth-server.i7qbi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+console.log('Reading Config');
+const { protocol, host, name, opts } = config.db;
+const uri = `${protocol}://${host}/${name}${opts ? `?${opts}` : ''}`;
+
+console.log(`Mongo uri: ${uri}`);
 
 module.exports = () => {
 	mongoose.connect(uri, {
