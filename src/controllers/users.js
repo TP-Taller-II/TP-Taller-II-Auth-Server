@@ -62,6 +62,20 @@ const getUser = async (id, res) => {
 	}
 };
 
+const getAllUsers = async res => {
+
+	try {
+
+		const { password, token, ...user } = await users.getAllUsers();
+
+		res.status(STATUS_CODES.OK).send(user);
+
+	} catch (error) {
+		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
+	}
+};
+
+// Todo: filter not public data ['visualización de perfil de otros usuarios'] !!!!
 const getUserById = (req, res) => {
 	const { id } = req.params;
 	return getUser(id, res);
@@ -125,6 +139,7 @@ module.exports = {
 	getMe,
 	signIn,
 	updateUser,
-	getUser,
 	signOut,
+	getUser,
+	getAllUsers,
 };
