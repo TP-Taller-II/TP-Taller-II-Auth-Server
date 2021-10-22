@@ -5,9 +5,10 @@ const { addHoursToDate } = require('../helpers/date');
 const { userSchema } = require('../schemas/index');
 const userServices = require('./user-service');
 const Model = require('../databases/mongodb/model');
+const config = require('../../config/config');
 
 const EXPIRATION_HOURS = 480; // !!!! chsnge to 4
-const secret = 'puchero12';
+const secret = config.auth.jwtSigningSecret;
 
 class TokenServices {
 
