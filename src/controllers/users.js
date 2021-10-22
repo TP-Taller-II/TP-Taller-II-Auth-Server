@@ -5,26 +5,12 @@ const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
 
-function validatePrivateKey(req) {
-	if (process.env.PRIVATE_KEY === req.header('API_KEY'))
-		return true;
-	return false;
-}
-
 const signUp = async (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
 	try {
-		console.log("Signup1")
 		const userData = req.body;
-		console.log("Signup2")
 		const { password, ...user } = await users.createUser(userData);
-		console.log("Signup3")
 		const token = await tokenServices.generateToken(user);
-		console.log("Signup4")
 		await users.updateToken(user._id, token);
-		console.log("Signup5")
 
 		res.header('x-auth-token', token)
 			.status(STATUS_CODES.OK)
@@ -36,9 +22,6 @@ const signUp = async (req, res) => {
 };
 
 const signIn = async (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
 	try {
 		const { email, password: passwordToValidate } = req.body;
 
@@ -80,17 +63,11 @@ const getUser = async (id, res) => {
 };
 
 const getUserById = (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
 	const { id } = req.params;
 	return getUser(id, res);
 };
 
 const getMe = async (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
 	const { session: { _id } } = req;
 
 	try {
@@ -104,9 +81,6 @@ const getMe = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
 	const { _id } = req.session;
 	const { password } = req.body;
 
@@ -132,54 +106,7 @@ const updateUser = async (req, res) => {
 	}
 };
 
-const oauthSignUp = async (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
-	try {
-
-		const userData = req.body;
-		const { password, ...user } = await users.createUser({ ...userData, provider: 'google' });
-		const token = await tokenServices.generateToken(user);
-		await users.updateToken(user._id, token);
-
-		res.header('x-auth-token', token)
-			.status(STATUS_CODES.OK)
-			.send({ ...user, accessToken: token });
-
-	} catch (error) {
-		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
-	}
-};
-
-const oauthSignIn = async (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
-	try {
-		const { email } = req.body;
-
-		const user = await users.getUserByEmail(email);
-
-		if (!user)
-			return res.status(STATUS_CODES.BAD_REQUEST).send({ message: 'Invalid email' });
-
-		const token = await tokenServices.generateToken(user);
-		await users.updateToken(user._id, token);
-
-		res.header('x-auth-token', token)
-			.status(STATUS_CODES.OK)
-			.send({ ...user, accessToken: token });
-
-	} catch (error) {
-		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
-	}
-};
-
 const signOut = async (req, res) => {
-	if (!validatePrivateKey(req))
-		return res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Access denied. Wrong API_KEY provided.' });
-
 	try {
 
 		const { session: { _id } } = req;
@@ -199,7 +126,5 @@ module.exports = {
 	signIn,
 	updateUser,
 	getUser,
-	oauthSignUp,
-	oauthSignIn,
 	signOut,
 };

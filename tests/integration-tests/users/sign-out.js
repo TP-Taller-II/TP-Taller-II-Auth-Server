@@ -34,7 +34,7 @@ describe('Users', async () => {
 
 			sandbox.stub(Model.prototype, 'update').resolves(true);
 
-			const res = await chai.request(app).post('/api/users/signOut')
+			const res = await chai.request(app).post('/auth-server/v1/users/signOut')
 				.set('x-auth-token', 'some-valid-token');
 
 			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
@@ -47,7 +47,7 @@ describe('Users', async () => {
 
 			sandbox.stub(Model.prototype, 'update').rejects(new Error('DB ERROR'));
 
-			const res = await chai.request(app).post('/api/users/signOut')
+			const res = await chai.request(app).post('/auth-server/v1/users/signOut')
 				.set('x-auth-token', 'some-valid-token');
 			assert.deepStrictEqual(res.status, STATUS_CODES.INTERNAL_SERVER_ERROR);
 			assert.deepStrictEqual(res.body, { message: 'DB ERROR' });

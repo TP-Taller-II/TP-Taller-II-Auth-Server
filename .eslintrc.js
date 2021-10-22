@@ -34,11 +34,7 @@ module.exports = {
 
 		curly: ['off', 'all'],
 
-		'no-underscore-dangle': ['warn', {
-			allowAfterThis: true,
-			allowAfterSuper: true,
-			allow: ['_call', '__rootpath', '_where'],
-		}],
+		'no-underscore-dangle': 'off',
 
 		'no-tabs': 0,
 

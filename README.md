@@ -1,4 +1,4 @@
-# Server
+# Auth-Server
 
 ## ¿Cómo correr el servicio?
 
@@ -45,3 +45,6 @@ docker-compose exec app npm run coverage -- -w
 ## Documentación de API
 
 Para ver la documentación de las API desde un browser teniendo el servicio levantado se debe acceder a: [http://localhost:8080/api-docs/#](http://localhost:8080/api-docs/#)
+
+## Heroku
+*Esta aplicación esta deployada en https://ubademy-g2-auth-server.herokuapp.com*
