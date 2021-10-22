@@ -103,5 +103,23 @@ describe('Users', async () => {
 
 			sandbox.assert.calledOnce(Model.prototype.findBy);
 		});
+
+		it('Should set status code 400 when the passwords don\'t match', async () => {
+
+			sandbox.stub(Model.prototype, 'findBy').resolves([fakeUser]);
+			sandbox.stub(Bcrypt, 'compare').resolves(false);
+			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
+			sandbox.stub(Model.prototype, 'update').resolves(true);
+
+			const res = await chai.request(app).post('/auth-server/v1/admin/signIn')
+				.send({ ...fakeUser, password: 'notcorrect' });
+			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
+			assert.deepStrictEqual(res.body, { message: 'Invalid email or password' });
+
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeUser.email);
+			sandbox.assert.calledOnce(Bcrypt.compare);
+			sandbox.assert.notCalled(TokenServices.prototype.generateToken);
+			sandbox.assert.notCalled(Model.prototype.update);
+		});
 	});
 });
