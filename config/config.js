@@ -8,7 +8,10 @@ const defaultConfig = {
 	db: {
 		protocol: 'mongodb',
 		host: 'localhost:27017',
-		name: 'auth-server',
+		name: 'authServerDB',
+	},
+	auth: {
+		jwtSigningSecret: 'puchero12',
 	},
 };
 
@@ -33,6 +36,9 @@ const prod = {
 		protocol: 'mongodb+srv',
 		host: `ubademy-g2:${process.env.MONGO_DB_PASS}@auth-server.i7qbi.mongodb.net`,
 		opts: 'retryWrites=true&w=majority',
+	},
+	auth: {
+		jwtSigningSecret: process.env.JWT_SIGNING_SECRET,
 	},
 };
 
