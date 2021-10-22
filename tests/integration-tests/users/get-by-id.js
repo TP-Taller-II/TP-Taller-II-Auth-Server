@@ -29,8 +29,6 @@ describe('Users', async () => {
 
 	const fakeUser = {
 		_id: '60456ebb0190bf001f6bbee2',
-		canShare: [],
-		canRead: [],
 		name: 'Userfirstname',
 		surname: 'Userlastname',
 		birthDate: '1996-08-03T00:00:00.000Z',
@@ -50,7 +48,7 @@ describe('Users', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy').resolves([fakeUser]);
 
-			const res = await chai.request(app).get(`/api/users/${fakeUser._id}`);
+			const res = await chai.request(app).get(`/auth-server/v1/users/${fakeUser._id}`);
 
 			assert.deepStrictEqual(res.status, STATUS_CODES.UNAUTHORIZED);
 
@@ -61,7 +59,7 @@ describe('Users', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy').resolves([fakeUser]);
 
-			const res = await chai.request(app).get(`/api/users/${fakeUser._id}`)
+			const res = await chai.request(app).get(`/auth-server/v1/users/${fakeUser._id}`)
 				.set('x-auth-token', 'some-valid-token');
 
 			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
@@ -76,7 +74,7 @@ describe('Users', async () => {
 			sandbox.stub(Model.prototype, 'findBy').rejects(new Error('DB ERROR'));
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 
-			const res = await chai.request(app).get(`/api/users/${fakeUser._id}`)
+			const res = await chai.request(app).get(`/auth-server/v1/users/${fakeUser._id}`)
 				.set('x-auth-token', 'some-valid-token');
 			assert.deepStrictEqual(res.status, STATUS_CODES.INTERNAL_SERVER_ERROR);
 			assert.deepStrictEqual(res.body, { message: 'DB ERROR' });

@@ -63,21 +63,6 @@ const removeToken = async _id => {
 	return userModel.update({ _id }, { accessToken: null });
 };
 
-const updateGuest = async ({ guestEmail, fileId, canShare: requestCanShare }) => {
-
-	const guest = await getUserByEmail(guestEmail);
-
-	if (requestCanShare) {
-		const { canShare } = guest;
-		const canShareFilesUpdated = [...new Set([...canShare, fileId])];
-		return userModel.update({ email: guestEmail }, { canShare: canShareFilesUpdated });
-	}
-
-	const { canRead } = guest;
-	const canReadFilesUpdated = [...new Set([...canRead, fileId])];
-	return userModel.update({ email: guestEmail }, { canRead: canReadFilesUpdated });
-};
-
 
 module.exports = {
 	createUser,
@@ -88,6 +73,5 @@ module.exports = {
 	getUserByEmail,
 	updateToken,
 	removeToken,
-	updateGuest,
 	getUsersByEmails,
 };

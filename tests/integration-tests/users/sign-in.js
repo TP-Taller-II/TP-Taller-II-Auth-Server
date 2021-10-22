@@ -29,8 +29,6 @@ describe('Users', async () => {
 
 	const fakeUser = {
 		_id: '60456ebb0190bf001f6bbee2',
-		canShare: [],
-		canRead: [],
 		name: 'Userfirstname',
 		surname: 'Userlastname',
 		birthDate: '1996-08-03T00:00:00.000Z',
@@ -49,7 +47,7 @@ describe('Users', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy').resolves([]);
 
-			const res = await chai.request(app).post('/api/users/signIn')
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
 				.send(fakeUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
 			assert.deepStrictEqual(res.body, { message: 'Invalid email' });
@@ -64,7 +62,7 @@ describe('Users', async () => {
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').resolves(true);
 
-			const res = await chai.request(app).post('/api/users/signIn')
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
 				.send(fakeUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
 			assert.deepStrictEqual(res.body, { message: 'Invalid email or password' });
@@ -82,7 +80,7 @@ describe('Users', async () => {
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').resolves(true);
 
-			const res = await chai.request(app).post('/api/users/signIn')
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
 				.send(fakeUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
 			const { password, ...formattedUser } = fakeUser;
@@ -98,7 +96,7 @@ describe('Users', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy').rejects(new Error('DB ERROR'));
 
-			const res = await chai.request(app).post('/api/users/signIn')
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
 				.send(fakeUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.INTERNAL_SERVER_ERROR);
 			assert.deepStrictEqual(res.body, { message: 'DB ERROR' });

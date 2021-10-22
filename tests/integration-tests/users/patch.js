@@ -30,8 +30,6 @@ describe('Users', async () => {
 
 	const fakeUser = {
 		_id: '60456ebb0190bf001f6bbee2',
-		canShare: [],
-		canRead: [],
 		name: 'Userfirstname',
 		surname: 'Userlastname',
 		birthDate: '1996-08-03T00:00:00.000Z',
@@ -50,7 +48,7 @@ describe('Users', async () => {
 
 			const { password, ...formattedBody } = fakeUser;
 
-			const res = await chai.request(app).patch('/api/users/me')
+			const res = await chai.request(app).patch('/auth-server/v1/users/me')
 				.send(formattedBody)
 				.set('x-auth-token', 'some-valid-token');
 
@@ -62,7 +60,7 @@ describe('Users', async () => {
 			sandbox.stub(Model.prototype, 'findBy').resolves([fakeUser]);
 			sandbox.stub(Bcrypt, 'compare').resolves(false);
 
-			const res = await chai.request(app).patch('/api/users/me')
+			const res = await chai.request(app).patch('/auth-server/v1/users/me')
 				.send(fakeUser)
 				.set('x-auth-token', 'some-valid-token');
 
@@ -79,7 +77,7 @@ describe('Users', async () => {
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').returns(true);
 
-			const res = await chai.request(app).patch('/api/users/me')
+			const res = await chai.request(app).patch('/auth-server/v1/users/me')
 				.send(fakeUser)
 				.set('x-auth-token', 'some-valid-token');
 
@@ -95,7 +93,7 @@ describe('Users', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy').rejects(new Error('DB ERROR'));
 
-			const res = await chai.request(app).patch('/api/users/me')
+			const res = await chai.request(app).patch('/auth-server/v1/users/me')
 				.send(fakeUser)
 				.set('x-auth-token', 'some-valid-token');
 			assert.deepStrictEqual(res.status, STATUS_CODES.INTERNAL_SERVER_ERROR);
