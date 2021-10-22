@@ -12,8 +12,9 @@ const validateCredentials = (passwordToValidate, password) => {
 	return Bcrypt.compare(passwordToValidate, password);
 };
 
-const getAdminUsersByEmails = email => {
-	return adminUserSchema.find({ email });
+const getAdminUserByEmail = async email => {
+	const [user] = await adminUserModel.findBy('email', email);
+	return user;
 };
 
 const updateToken = async (_id, accessToken) => {
@@ -26,7 +27,7 @@ const removeToken = async _id => {
 
 
 module.exports = {
-	getAdminUsersByEmails,
+	getAdminUserByEmail,
 	validateCredentials,
 	updateToken,
 	removeToken,
