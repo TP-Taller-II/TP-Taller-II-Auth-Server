@@ -8,27 +8,27 @@ const STATUS_CODES = require('../utils/status-codes.json');
 const tokenServices = new TokenServices();
 
 const signIn = async (req, res) => {
+	console.log('AdminUserController - signIn');
 	try {
 		const { email, password: passwordToValidate } = req.body;
 
-		const user = await adminUsers.getAdminUsersByEmails(email);
+		const adminUser = await adminUsers.getAdminUserByEmail(email);
 
-		if (!user)
+		if (!adminUser)
 			return res.status(STATUS_CODES.BAD_REQUEST).send({ message: 'Invalid email' });
 
-		const { password, ...formattedUser } = user;
+		const { password, ...formattedAdminUser } = adminUser;
 
 		const areCredentialsValid = await adminUsers.validateCredentials(passwordToValidate, password);
-
 		if (!areCredentialsValid)
 			return res.status(STATUS_CODES.BAD_REQUEST).send({ message: 'Invalid email or password' });
 
-		const token = await tokenServices.generateToken(formattedUser);
-		await adminUsers.updateToken(user._id, token);
+		const token = await tokenServices.generateToken(formattedAdminUser);
+		await adminUsers.updateToken(adminUser._id, token);
 
 		res.header('x-auth-token', token)
 			.status(STATUS_CODES.OK)
-			.send({ ...formattedUser, accessToken: token });
+			.send({ ...formattedAdminUser, accessToken: token });
 
 	} catch (error) {
 		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
