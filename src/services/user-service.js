@@ -3,7 +3,6 @@
 const Bcrypt = require('bcrypt');
 const { userSchema } = require('../schemas/index');
 const Model = require('../databases/mongodb/model');
-const Mailer = require('../mailer/index');
 
 
 const userModel = new Model('Users', userSchema);
@@ -79,12 +78,6 @@ const updateGuest = async ({ guestEmail, fileId, canShare: requestCanShare }) =>
 	return userModel.update({ email: guestEmail }, { canRead: canReadFilesUpdated });
 };
 
-const sendEmail = (shareRequestId, guestEmail, hostEmail, fileName) => {
-
-	const mailer = new Mailer();
-	return mailer.sendInvitationEmail(shareRequestId, guestEmail, hostEmail, fileName);
-};
-
 
 module.exports = {
 	createUser,
@@ -96,6 +89,5 @@ module.exports = {
 	updateToken,
 	removeToken,
 	updateGuest,
-	sendEmail,
 	getUsersByEmails,
 };

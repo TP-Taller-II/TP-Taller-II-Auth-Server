@@ -6,7 +6,7 @@ const { userSchema } = require('../schemas/index');
 const userServices = require('./user-service');
 const Model = require('../databases/mongodb/model');
 
-const EXPIRATION_HOURS = 4;
+const EXPIRATION_HOURS = 480; // !!!! chsnge to 4
 const secret = 'puchero12';
 
 class TokenServices {

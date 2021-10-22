@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://mmagali@gitlab.com/mmagali/tdd-server.git"
+    "url": "git@github.com:TP-Taller-II/TP-Taller-II-Auth-Server.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/mmagali/tdd-server/issues"
+    "url": "https://github.com/TP-Taller-II/TP-Taller-II-Auth-Server/issues"
   },
-  "homepage": "https://gitlab.com/mmagali/tdd-server#readme",
+  "homepage": "https://github.com/TP-Taller-II/TP-Taller-II-Auth-Server",
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
