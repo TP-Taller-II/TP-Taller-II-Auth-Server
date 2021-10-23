@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const { addDaysToDate, addHoursToDate } = require('../../src/helpers/date');
+const { addDaysToDate, addHoursToDate } = require('../../src/helpers/date-helper');
 
 
 describe('Utils', () => {

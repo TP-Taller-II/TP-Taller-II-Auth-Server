@@ -1,15 +1,13 @@
 'use strict';
 
-const Bcrypt = require('bcrypt');
 const { adminUserSchema } = require('../schemas/index');
 const Model = require('../databases/mongodb/model');
-
+const encryptionHelper = require('../helpers/encryption-helper');
 
 const adminUserModel = new Model('adminusers', adminUserSchema);
 
-// Todo: extract repeated code !!!!
 const validateCredentials = (passwordToValidate, password) => {
-	return Bcrypt.compare(passwordToValidate, password);
+	return encryptionHelper.compare(passwordToValidate, password);
 };
 
 const getAdminUserByEmail = async email => {
