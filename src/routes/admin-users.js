@@ -11,5 +11,6 @@ router.post('/signIn', adminUsers.signIn);
 router.post('/signOut', authenticateUser, authenticateAdminUser, adminUsers.signOut);
 router.get('/users', authenticateUser, authenticateAdminUser, adminUsers.getAllUsersAsAdmin);
 router.get('/users/:id', authenticateUser, authenticateAdminUser, adminUsers.getUserById);
+router.get('/:id', authenticateUser, adminUsers.userIsAdmin);
 
 module.exports = router;
