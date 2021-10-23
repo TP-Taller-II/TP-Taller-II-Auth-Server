@@ -1,7 +1,7 @@
 'use strict';
 
 const jwt = require('jsonwebtoken');
-const { addHoursToDate } = require('../helpers/date');
+const { addHoursToDate } = require('../helpers/date-helper');
 const { userSchema } = require('../schemas/index');
 const userServices = require('./user-service');
 const Model = require('../databases/mongodb/model');

@@ -1,15 +1,14 @@
 'use strict';
 
-const Bcrypt = require('bcrypt');
 const { userSchema } = require('../schemas/index');
 const Model = require('../databases/mongodb/model');
+const encryptionHelper = require('../helpers/encryption-helper');
 
 
 const userModel = new Model('users', userSchema);
 
 const getEncriptedPassword = async password => {
-	const salt = await Bcrypt.genSalt(10);
-	return Bcrypt.hash(password, salt);
+	return encryptionHelper.encrypt(password);
 };
 
 const createUser = async user => {
@@ -22,7 +21,7 @@ const createUser = async user => {
 };
 
 const validateCredentials = (passwordToValidate, password) => {
-	return Bcrypt.compare(passwordToValidate, password);
+	return encryptionHelper.compare(passwordToValidate, password);
 };
 
 const getAllUsers = () => {

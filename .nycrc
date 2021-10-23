@@ -2,11 +2,11 @@
   "exclude": [
     ".eslintrc.js ",
     ".lintstagedrc.js",
-    "documentation/", 
-    "tests", 
+    "documentation/",
+    "tests",
     "src/databases/mongodb/model.js",
     "src/helpers/email-helper.js",
-    "src/services/token.js",
+    "src/services/token-service.js",
     "src/startup",
     "src/mailer"
   ],
