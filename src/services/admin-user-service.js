@@ -17,6 +17,11 @@ const getAdminUserByEmail = async email => {
 	return user;
 };
 
+const getAdminUserById = async id => {
+	const [user] = await adminUserModel.findBy('_id', id);
+	return user;
+};
+
 const updateToken = async (_id, accessToken) => {
 	return adminUserModel.update({ _id }, { accessToken });
 };
@@ -28,6 +33,7 @@ const removeToken = async _id => {
 
 module.exports = {
 	getAdminUserByEmail,
+	getAdminUserById,
 	validateCredentials,
 	updateToken,
 	removeToken,

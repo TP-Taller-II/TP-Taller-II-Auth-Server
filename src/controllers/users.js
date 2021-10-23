@@ -75,7 +75,7 @@ const getAllUsers = async res => {
 	}
 };
 
-// Todo: filter not public data ['visualización de perfil de otros usuarios'] !!!!
+// Todo: filter out not public data ['visualización de perfil de otros usuarios'] !!!!
 const getUserById = (req, res) => {
 	const { id } = req.params;
 	return getUser(id, res);
