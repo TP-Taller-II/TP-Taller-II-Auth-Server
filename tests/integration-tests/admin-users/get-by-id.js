@@ -99,7 +99,7 @@ describe('AdminUsers', async () => {
 			sandbox.assert.calledTwice(Model.prototype.findBy);
 		});
 
-		it('Should set status code 500 when database fails when trying to find the user', async () => {
+		it('Should set status code 500 when database fails when trying to find the admin user', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy')
 				.withArgs('_id', fakeAdminUser._id)

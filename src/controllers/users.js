@@ -1,6 +1,6 @@
 'use strict';
 
-const { users, TokenServices } = require('../services/index');
+const { userService, TokenServices } = require('../services/index');
 const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
@@ -8,9 +8,9 @@ const tokenServices = new TokenServices();
 const signUp = async (req, res) => {
 	try {
 		const userData = req.body;
-		const { password, ...user } = await users.createUser(userData);
+		const { password, ...user } = await userService.createUser(userData);
 		const token = await tokenServices.generateToken(user);
-		await users.updateToken(user._id, token);
+		await userService.updateToken(user._id, token);
 
 		res.header('x-auth-token', token)
 			.status(STATUS_CODES.OK)
@@ -25,20 +25,20 @@ const signIn = async (req, res) => {
 	try {
 		const { email, password: passwordToValidate } = req.body;
 
-		const user = await users.getUserByEmail(email);
+		const user = await userService.getUserByEmail(email);
 
 		if (!user)
 			return res.status(STATUS_CODES.BAD_REQUEST).send({ message: 'Invalid email' });
 
 		const { password, ...formattedUser } = user;
 
-		const areCredentialsValid = await users.validateCredentials(passwordToValidate, password);
+		const areCredentialsValid = await userService.validateCredentials(passwordToValidate, password);
 
 		if (!areCredentialsValid)
 			return res.status(STATUS_CODES.BAD_REQUEST).send({ message: 'Invalid email or password' });
 
 		const token = await tokenServices.generateToken(formattedUser);
-		await users.updateToken(user._id, token);
+		await userService.updateToken(user._id, token);
 
 		res.header('x-auth-token', token)
 			.status(STATUS_CODES.OK)
@@ -53,20 +53,7 @@ const getUser = async (id, res) => {
 
 	try {
 
-		const { password, token, ...user } = await users.getUserById(id);
-
-		res.status(STATUS_CODES.OK).send(user);
-
-	} catch (error) {
-		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
-	}
-};
-
-const getAllUsers = async res => {
-
-	try {
-
-		const { password, token, ...user } = await users.getAllUsers();
+		const { password, token, ...user } = await userService.getUserById(id);
 
 		res.status(STATUS_CODES.OK).send(user);
 
@@ -86,7 +73,7 @@ const getMe = async (req, res) => {
 
 	try {
 
-		const { password, token, ...user } = await users.getUserById(_id);
+		const { password, token, ...user } = await userService.getUserById(_id);
 
 		res.status(STATUS_CODES.OK).send(user);
 	} catch (error) {
@@ -103,15 +90,15 @@ const updateUser = async (req, res) => {
 		if (!password)
 			throw new Error('To update user password is required');
 
-		const currentUser = await users.getUserById(_id);
+		const currentUser = await userService.getUserById(_id);
 
-		if (!await users.validateCredentials(password, currentUser.password))
+		if (!await userService.validateCredentials(password, currentUser.password))
 			throw new Error('Password is not valid');
 
-		const { password: passwordUpdated, ...userUpdated } = await users.updateUser({ ...req.body, _id });
+		const { password: passwordUpdated, ...userUpdated } = await userService.updateUser({ ...req.body, _id });
 
 		const token = await tokenServices.generateToken(userUpdated);
-		await users.updateToken(_id, token);
+		await userService.updateToken(_id, token);
 
 		res.header('x-auth-token', token).status(STATUS_CODES.OK)
 			.send({ ...userUpdated, accessToken: token });
@@ -125,7 +112,7 @@ const signOut = async (req, res) => {
 
 		const { session: { _id } } = req;
 
-		await users.removeToken(_id);
+		await userService.removeToken(_id);
 
 		res.status(STATUS_CODES.OK).send({ message: 'User sign out' });
 	} catch ({ message }) {
@@ -141,5 +128,4 @@ module.exports = {
 	updateUser,
 	signOut,
 	getUser,
-	getAllUsers,
 };
