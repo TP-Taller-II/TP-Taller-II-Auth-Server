@@ -2,11 +2,13 @@
 
 
 const users = require('./users/schema');
+const adminUsers = require('./admin-users/schema');
 
 module.exports = {
 	components: {
 		schemas: {
 			...users,
+			...adminUsers,
 		},
 		responses: {
 			InternalServerError: {
@@ -24,6 +26,15 @@ module.exports = {
 					message: {
 						type: 'string',
 						example: 'Access token is missing or invalid',
+					},
+				},
+			},
+			ForbiddenError: {
+				type: 'object',
+				properties: {
+					message: {
+						type: 'string',
+						example: 'Access denied. Not an admin user.',
 					},
 				},
 			},

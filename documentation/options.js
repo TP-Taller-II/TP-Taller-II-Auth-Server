@@ -20,6 +20,10 @@ const options = {
 			name: 'Users',
 			description: 'Related with users',
 		},
+		{
+			name: 'AdminUsers',
+			description: 'Related with admin users',
+		},
 	],
 	security: [
 		{
