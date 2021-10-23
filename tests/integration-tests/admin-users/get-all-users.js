@@ -65,7 +65,7 @@ describe('AdminUsers', async () => {
 		sandbox.restore();
 	});
 
-	describe('Get by Id', async () => {
+	describe('Get All Users', async () => {
 
 		it('Should set status code 401 when no token is provided', async () => {
 

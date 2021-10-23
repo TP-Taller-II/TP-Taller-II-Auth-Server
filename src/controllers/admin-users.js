@@ -49,7 +49,6 @@ const getAllUsersAsAdmin = async (req, res) => {
 	} catch (error) {
 		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
 	}
-
 };
 
 const signOut = async (req, res) => {
@@ -65,9 +64,24 @@ const signOut = async (req, res) => {
 	}
 };
 
+const userIsAdmin = async (req, res) => {
+	const { id } = req.params;
+
+	try {
+		const adminUser = await adminUserService.getAdminUserById(id);
+		if (!adminUser)
+			return res.status(STATUS_CODES.NOT_FOUND).send({ message: 'User is not and admin.' });
+
+		res.status(STATUS_CODES.OK).send({ id });
+	} catch (err) {
+		res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: err.message });
+	}
+};
+
 module.exports = {
 	getUserById,
 	getAllUsersAsAdmin,
 	signIn,
 	signOut,
+	userIsAdmin,
 };
