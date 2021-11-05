@@ -10,7 +10,7 @@
     "test": "export NODE_ENV=test && mocha --exit -R nyan --recursive tests/",
     "test-ci": "mocha --exit --recursive tests/",
     "coverage": "nyc npm test",
-    "coverage:report": "nyc npm run test:report"
+    "coverage:report": "nyc --reporter=lcov mocha --exit --recursive tests/"
   },
   "repository": {
     "type": "git",
@@ -52,6 +52,7 @@
     "swagger-ui-express": "^4.1.4",
     "moment-timezone": "^0.5.33",
     "ws": "^7.5.0",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "codecov": "^3.8.3"
   }
 }
