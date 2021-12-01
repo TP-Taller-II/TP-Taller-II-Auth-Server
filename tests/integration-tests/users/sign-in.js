@@ -111,7 +111,7 @@ describe('Users', async () => {
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').resolves(true);
 
-			const res = await chai.request(app).post('/auth-server/v1/admin/signIn')
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
 				.send({ ...fakeUser, password: 'notcorrect' });
 			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
 			assert.deepStrictEqual(res.body, { message: 'Invalid email or password' });
