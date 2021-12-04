@@ -1,5 +1,6 @@
 # CONFIG PARA ENVIROMENTAL VARIABLES
 config/default.json
+.env
 
 # Logs
 logs
