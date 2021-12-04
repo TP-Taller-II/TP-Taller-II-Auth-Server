@@ -26,7 +26,9 @@ const test = {
 const docker = {
 	...defaultConfig,
 	db: {
+		protocol: 'mongodb',
 		host: 'mongo:27017',
+		name: '',
 	},
 };
 
