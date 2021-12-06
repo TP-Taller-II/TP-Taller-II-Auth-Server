@@ -90,7 +90,10 @@ describe('AdminUsers', async () => {
 				.set('x-auth-token', 'some-valid-token');
 
 			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
-			const usersExpected = [{ _id: fakeUser1._id, email: fakeUser1.email }, { _id: fakeUser2._id, email: fakeUser2.email }];
+			const usersExpected = [
+				{ _id: fakeUser1._id, email: fakeUser1.email, name: fakeUser1.name, surname: fakeUser1.surname, profilePic: fakeUser1.profilePic },
+				{ _id: fakeUser2._id, email: fakeUser2.email, name: fakeUser2.name, surname: fakeUser2.surname, profilePic: fakeUser2.profilePic }
+			];
 			assert.deepStrictEqual(res.body, usersExpected);
 
 			sandbox.assert.calledOnce(Model.prototype.findBy);
