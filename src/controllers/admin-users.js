@@ -8,7 +8,6 @@ const STATUS_CODES = require('../utils/status-codes.json');
 const tokenServices = new TokenServices();
 
 const signIn = async (req, res) => {
-	console.log('AdminUserController - signIn');
 	try {
 		const { email, password: passwordToValidate } = req.body;
 
@@ -43,7 +42,11 @@ const getUserById = (req, res) => {
 const getAllUsersAsAdmin = async (req, res) => {
 	try {
 		const users = await userService.getAllUsers();
-		const formattedUsers = users.map(user => (({ _id, email }) => ({ _id, email }))(user));
+		const formattedUsers = users.map(user => (({
+			_id, email, name, surname, profilePic,
+		}) => ({
+			_id, email, name, surname, profilePic,
+		}))(user));
 
 		res.status(STATUS_CODES.OK).send(formattedUsers);
 	} catch (error) {
