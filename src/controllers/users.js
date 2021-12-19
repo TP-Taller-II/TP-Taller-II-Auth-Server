@@ -21,31 +21,88 @@ const signUp = async (req, res) => {
 	}
 };
 
+const signInEmail = async (req, res) => {
+	const {
+		email,
+		password: passwordToValidate,
+	} = req.body;
+
+	const user = await userService.getUserByEmail(email);
+
+	if (!user)
+		return res.status(STATUS_CODES.BAD_REQUEST)
+			.send({ message: 'Invalid email' });
+
+	const {
+		password,
+		...formattedUser
+	} = user;
+
+	const areCredentialsValid = await userService.validateCredentials(passwordToValidate, password);
+
+	if (!areCredentialsValid)
+		return res.status(STATUS_CODES.BAD_REQUEST)
+			.send({ message: 'Invalid email or password' });
+
+	const token = await tokenServices.generateToken(formattedUser);
+	await userService.updateToken(user._id, token);
+
+	res.header('x-auth-token', token)
+		.status(STATUS_CODES.OK)
+		.send({
+			...formattedUser,
+			accessToken: token,
+		});
+};
+
+// const signInGoogle = async (req, res) => {
+// 	const {
+// 		email,
+// 		password: passwordToValidate
+// 	} = req.body;
+//
+// 	const user = await userService.getUserByEmail(email);
+//
+// 	if (!user)
+// 		return res.status(STATUS_CODES.BAD_REQUEST)
+// 			.send({ message: 'Invalid email' });
+//
+// 	const {
+// 		password,
+// 		...formattedUser
+// 	} = user;
+//
+// 	const areCredentialsValid = await userService.validateCredentials(passwordToValidate, password);
+//
+// 	if (!areCredentialsValid)
+// 		return res.status(STATUS_CODES.BAD_REQUEST)
+// 			.send({ message: 'Invalid email or password' });
+//
+// 	const token = await tokenServices.generateToken(formattedUser);
+// 	await userService.updateToken(user._id, token);
+//
+// 	res.header('x-auth-token', token)
+// 		.status(STATUS_CODES.OK)
+// 		.send({
+// 			...formattedUser,
+// 			accessToken: token
+// 		});
+//
+// };
+
 const signIn = async (req, res) => {
 	try {
-		const { email, password: passwordToValidate } = req.body;
 
-		const user = await userService.getUserByEmail(email);
+		const { provider } = req.body;
 
-		if (!user)
-			return res.status(STATUS_CODES.BAD_REQUEST).send({ message: 'Invalid email' });
+		if (provider === 'email') {
+			return await signInEmail(req, res);
+		}
 
-		const { password, ...formattedUser } = user;
-
-		const areCredentialsValid = await userService.validateCredentials(passwordToValidate, password);
-
-		if (!areCredentialsValid)
-			return res.status(STATUS_CODES.BAD_REQUEST).send({ message: 'Invalid email or password' });
-
-		const token = await tokenServices.generateToken(formattedUser);
-		await userService.updateToken(user._id, token);
-
-		res.header('x-auth-token', token)
-			.status(STATUS_CODES.OK)
-			.send({ ...formattedUser, accessToken: token });
-
+		return res.status(STATUS_CODES.BAD_REQUEST).send({ message: `Invalid provider: ${provider}` });
 	} catch (error) {
-		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
+		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+			.send({ message: error.message });
 	}
 };
 
