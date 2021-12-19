@@ -27,7 +27,7 @@ describe('Users', async () => {
 		sandbox.restore();
 	});
 
-	const fakeUser = {
+	const fakeEmailUser = {
 		_id: '60456ebb0190bf001f6bbee2',
 		name: 'Userfirstname',
 		surname: 'Userlastname',
@@ -41,6 +41,19 @@ describe('Users', async () => {
 		__v: 0,
 	};
 
+	// const fakeGoogleUser = {
+	// 	_id: '60456ebb0190bf001f6bbee2',
+	// 	name: 'Userfirstname',
+	// 	surname: 'Userlastname',
+	// 	birthDate: '1996-08-03T00:00:00.000Z',
+	// 	email: 'some.email@hotmail.com',
+	// 	provider: 'google',
+	// 	profilePic: 'https://firebasestorage.googleapis.com/v0/b/tddrive-b11e3.appspot.com/o/8a909882b3c6a2fcba6e1d4a42dabd42.jpg',
+	// 	createdAt: '2021-03-08T00:24:27.083Z',
+	// 	updatedAt: '2021-03-09T21:43:10.726Z',
+	// 	__v: 0,
+	// };
+
 	describe('Sign in', async () => {
 
 		it('Should set status code 400 when user is not found', async () => {
@@ -48,26 +61,26 @@ describe('Users', async () => {
 			sandbox.stub(Model.prototype, 'findBy').resolves([]);
 
 			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
-				.send(fakeUser);
+				.send(fakeEmailUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
 			assert.deepStrictEqual(res.body, { message: 'Invalid email' });
 
-			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeUser.email);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeEmailUser.email);
 		});
 
 		it('Should set status code 200 when user is valid', async () => {
 
-			sandbox.stub(Model.prototype, 'findBy').resolves([fakeUser]);
+			sandbox.stub(Model.prototype, 'findBy').resolves([fakeEmailUser]);
 			sandbox.stub(Bcrypt, 'compare').resolves(false);
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').resolves(true);
 
 			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
-				.send(fakeUser);
+				.send(fakeEmailUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
 			assert.deepStrictEqual(res.body, { message: 'Invalid email or password' });
 
-			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeUser.email);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeEmailUser.email);
 			sandbox.assert.calledOnce(Bcrypt.compare);
 			sandbox.assert.notCalled(TokenServices.prototype.generateToken);
 			sandbox.assert.notCalled(Model.prototype.update);
@@ -75,18 +88,18 @@ describe('Users', async () => {
 
 		it('Should set status code 200 when user is valid', async () => {
 
-			sandbox.stub(Model.prototype, 'findBy').resolves([fakeUser]);
+			sandbox.stub(Model.prototype, 'findBy').resolves([fakeEmailUser]);
 			sandbox.stub(Bcrypt, 'compare').resolves(true);
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').resolves(true);
 
 			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
-				.send(fakeUser);
+				.send(fakeEmailUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
-			const { password, ...formattedUser } = fakeUser;
+			const { password, ...formattedUser } = fakeEmailUser;
 			assert.deepStrictEqual(res.body, { ...formattedUser, accessToken: 'fakeToken' });
 
-			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeUser.email);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeEmailUser.email);
 			sandbox.assert.calledOnce(Bcrypt.compare);
 			sandbox.assert.calledOnce(TokenServices.prototype.generateToken);
 			sandbox.assert.calledOnce(Model.prototype.update);
@@ -97,7 +110,7 @@ describe('Users', async () => {
 			sandbox.stub(Model.prototype, 'findBy').rejects(new Error('DB ERROR'));
 
 			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
-				.send(fakeUser);
+				.send(fakeEmailUser);
 			assert.deepStrictEqual(res.status, STATUS_CODES.INTERNAL_SERVER_ERROR);
 			assert.deepStrictEqual(res.body, { message: 'DB ERROR' });
 
@@ -106,20 +119,30 @@ describe('Users', async () => {
 
 		it('Should set status code 400 when the passwords don\'t match', async () => {
 
-			sandbox.stub(Model.prototype, 'findBy').resolves([fakeUser]);
+			sandbox.stub(Model.prototype, 'findBy').resolves([fakeEmailUser]);
 			sandbox.stub(Bcrypt, 'compare').resolves(false);
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').resolves(true);
 
 			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
-				.send({ ...fakeUser, password: 'notcorrect' });
+				.send({ ...fakeEmailUser, password: 'notcorrect' });
 			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
 			assert.deepStrictEqual(res.body, { message: 'Invalid email or password' });
 
-			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeUser.email);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeEmailUser.email);
 			sandbox.assert.calledOnce(Bcrypt.compare);
 			sandbox.assert.notCalled(TokenServices.prototype.generateToken);
 			sandbox.assert.notCalled(Model.prototype.update);
+		});
+
+		it('Should set status code 400 when provider is not valid', async () => {
+
+			const user = { ...fakeEmailUser, provider: 'nonexistent' };
+
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
+				.send(user);
+			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
+			assert.deepStrictEqual(res.body, { message: 'Invalid provider: nonexistent' });
 		});
 	});
 });
