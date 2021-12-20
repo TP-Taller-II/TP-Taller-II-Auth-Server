@@ -1,5 +1,6 @@
 'use strict';
 
+const axios = require('axios');
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -41,18 +42,43 @@ describe('Users', async () => {
 		__v: 0,
 	};
 
-	// const fakeGoogleUser = {
-	// 	_id: '60456ebb0190bf001f6bbee2',
-	// 	name: 'Userfirstname',
-	// 	surname: 'Userlastname',
-	// 	birthDate: '1996-08-03T00:00:00.000Z',
-	// 	email: 'some.email@hotmail.com',
-	// 	provider: 'google',
-	// 	profilePic: 'https://firebasestorage.googleapis.com/v0/b/tddrive-b11e3.appspot.com/o/8a909882b3c6a2fcba6e1d4a42dabd42.jpg',
-	// 	createdAt: '2021-03-08T00:24:27.083Z',
-	// 	updatedAt: '2021-03-09T21:43:10.726Z',
-	// 	__v: 0,
-	// };
+	const fakeGoogleUserRequest = {
+		googleIdToken: 'some-jwt',
+		provider: 'google',
+	};
+
+	const fakeGoogleUser = {
+		_id: '60456ebb0190bf001f6bbee3',
+		name: 'Some Names',
+		surname: 'Asurname',
+		email: 'some.google.email@fi.uba.ar',
+		provider: 'google',
+		createdAt: '2021-03-08T00:24:27.083Z',
+		updatedAt: '2021-03-09T21:43:10.726Z',
+		__v: 0,
+	};
+
+
+	const googleUserValidationResponse = {
+		iss: 'https://accounts.google.com',
+		azp: '366042836893-sr73u41cc1sam1vijfsm4pni4g5uvkhk.apps.googleusercontent.com',
+		aud: '366042836893-sr73u41cc1sam1vijfsm4pni4g5uvkhk.apps.googleusercontent.com',
+		sub: '111295581994168358240',
+		hd: 'fi.uba.ar',
+		email: 'some.google.email@fi.uba.ar',
+		email_verified: 'true',
+		at_hash: 'Xh97KS3jRcqGQocjui1B2g',
+		name: 'Some Names Asurname',
+		picture: 'https://lh3.googleusercontent.com/a/AATXAJy6KzR-znL2fTpQThweW5RZS76RcPBSU5bAQ2mm=s96-c',
+		given_name: 'Some Names',
+		family_name: 'Asurname',
+		locale: 'es',
+		iat: '1639959993',
+		exp: '1639963593',
+		alg: 'RS256',
+		kid: 'd98f49bc6ca4581eae8dfadd494fce10ea23aab0',
+		typ: 'JWT',
+	};
 
 	describe('Sign in', async () => {
 
@@ -68,7 +94,7 @@ describe('Users', async () => {
 			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeEmailUser.email);
 		});
 
-		it('Should set status code 200 when user is valid', async () => {
+		it('Should set status code 400 when email password is wrong', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy').resolves([fakeEmailUser]);
 			sandbox.stub(Bcrypt, 'compare').resolves(false);
@@ -143,6 +169,89 @@ describe('Users', async () => {
 				.send(user);
 			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
 			assert.deepStrictEqual(res.body, { message: 'Invalid provider: nonexistent' });
+		});
+
+		it('Should set status code 400 when provider is not set', async () => {
+
+			const user = { ...fakeEmailUser, provider: undefined };
+
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
+				.send(user);
+			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
+			assert.deepStrictEqual(res.body, { message: 'Invalid provider: undefined' });
+		});
+
+		it('Should set status code 400 when Google idToken validation fails', async () => {
+
+			sandbox.stub(axios, 'get')
+				.withArgs(`https://oauth2.googleapis.com/tokeninfo?id_token=${fakeGoogleUserRequest.googleIdToken}`)
+				.rejects({ message: 'Some Error' });
+
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
+				.send(fakeGoogleUserRequest);
+			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
+			assert.deepStrictEqual(res.body, { message: 'Error validating Google idToken.' });
+
+			sandbox.assert.calledOnce(axios.get);
+		});
+
+		it('Should set status code 200 when a new Google user is created', async () => {
+
+			sandbox.stub(axios, 'get')
+				.withArgs(`https://oauth2.googleapis.com/tokeninfo?id_token=${fakeGoogleUserRequest.googleIdToken}`)
+				.resolves({ data: googleUserValidationResponse });
+			sandbox.stub(Model.prototype, 'findBy').resolves([]);
+			sandbox.stub(Model.prototype, 'create').resolves({ ...fakeGoogleUser, provider: 'google' });
+			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
+			sandbox.stub(Model.prototype, 'update').resolves(true);
+
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
+				.send(fakeGoogleUserRequest);
+			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
+			assert.deepStrictEqual(res.body, { ...fakeGoogleUser, accessToken: 'fakeToken' });
+
+			sandbox.assert.calledOnce(axios.get);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeGoogleUser.email);
+			sandbox.assert.calledOnce(Model.prototype.create);
+			sandbox.assert.calledOnce(TokenServices.prototype.generateToken);
+			sandbox.assert.calledOnce(Model.prototype.update);
+		});
+
+		it('Should set status code 400 when trying to sign in using Google with a user that was registered with scope "email"', async () => {
+
+			sandbox.stub(Model.prototype, 'findBy').resolves([fakeEmailUser]);
+			sandbox.stub(axios, 'get')
+				.withArgs(`https://oauth2.googleapis.com/tokeninfo?id_token=${fakeGoogleUserRequest.googleIdToken}`)
+				.resolves({ data: googleUserValidationResponse });
+
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
+				.send(fakeGoogleUserRequest);
+			assert.deepStrictEqual(res.status, STATUS_CODES.BAD_REQUEST);
+			assert.deepStrictEqual(res.body, { message: 'The email is already used without registering with Google.' });
+
+			sandbox.assert.calledOnce(axios.get);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeGoogleUser.email);
+		});
+
+		it('Should set status code 200 when user is valid !!!!', async () => {
+
+			sandbox.stub(Model.prototype, 'findBy').resolves([fakeGoogleUser]);
+			sandbox.stub(axios, 'get')
+				.withArgs(`https://oauth2.googleapis.com/tokeninfo?id_token=${fakeGoogleUserRequest.googleIdToken}`)
+				.resolves({ data: googleUserValidationResponse });
+			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
+			sandbox.stub(Model.prototype, 'update').resolves(true);
+
+			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
+				.send(fakeGoogleUserRequest);
+			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
+			console.log(`!!!! res.body ${JSON.stringify(res.body)}`);
+			assert.deepStrictEqual(res.body, { ...fakeGoogleUser, accessToken: 'fakeToken' });
+
+			sandbox.assert.calledOnce(axios.get);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeGoogleUser.email);
+			sandbox.assert.calledOnce(TokenServices.prototype.generateToken);
+			sandbox.assert.calledOnce(Model.prototype.update);
 		});
 	});
 });
