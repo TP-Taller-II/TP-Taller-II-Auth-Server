@@ -21,7 +21,6 @@ module.exports = {
 				type: 'string',
 				description: 'The user\'s password',
 				example: 'joes super secret password',
-				required: true,
 				writeOnly: true,
 			},
 			surname: {

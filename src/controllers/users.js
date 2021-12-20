@@ -1,21 +1,30 @@
 'use strict';
 
-const { userService, TokenServices } = require('../services/index');
+const { googleAuthClient, userService, TokenServices } = require('../services/index'); // !!!!
 const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
 
-const signUp = async (req, res) => {
+const createUser = async (userData, res) => {
+	console.log('UserController - createUser.');
 	try {
-		const userData = req.body;
 		const { password, ...user } = await userService.createUser(userData);
 		const token = await tokenServices.generateToken(user);
 		await userService.updateToken(user._id, token);
 
-		res.header('x-auth-token', token)
+		return res.header('x-auth-token', token)
 			.status(STATUS_CODES.OK)
 			.send({ accessToken: token, ...user });
 
+	} catch (error) {
+		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
+	}
+};
+
+const signUp = async (req, res) => {
+	try {
+		const userData = req.body;
+		return await createUser(userData, res);
 	} catch (error) {
 		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
 	}
@@ -55,40 +64,54 @@ const signInEmail = async (req, res) => {
 		});
 };
 
-// const signInGoogle = async (req, res) => {
-// 	const {
-// 		email,
-// 		password: passwordToValidate
-// 	} = req.body;
-//
-// 	const user = await userService.getUserByEmail(email);
-//
-// 	if (!user)
-// 		return res.status(STATUS_CODES.BAD_REQUEST)
-// 			.send({ message: 'Invalid email' });
-//
-// 	const {
-// 		password,
-// 		...formattedUser
-// 	} = user;
-//
-// 	const areCredentialsValid = await userService.validateCredentials(passwordToValidate, password);
-//
-// 	if (!areCredentialsValid)
-// 		return res.status(STATUS_CODES.BAD_REQUEST)
-// 			.send({ message: 'Invalid email or password' });
-//
-// 	const token = await tokenServices.generateToken(formattedUser);
-// 	await userService.updateToken(user._id, token);
-//
-// 	res.header('x-auth-token', token)
-// 		.status(STATUS_CODES.OK)
-// 		.send({
-// 			...formattedUser,
-// 			accessToken: token
-// 		});
-//
-// };
+const signInGoogle = async (req, res) => {
+	console.log('UserController - signInGoogle');
+
+	const {
+		googleIdToken,
+	} = req.body;
+
+	let googleUser;
+
+	try {
+		googleUser = await googleAuthClient.validateIdToken(googleIdToken);
+
+		console.log(`!!!! googleUser ${googleUser}`);
+	} catch (error) {
+		console.log(`!!!! Error validating Google idToken: ${error}`);
+		return res
+			.status(STATUS_CODES.BAD_REQUEST)
+			.send({ message: 'Error validating Google idToken.' });
+	}
+
+	const user = await userService.getUserByEmail(googleUser.email);
+
+	if (!user) {
+		const newUser = {
+			name: googleUser.given_name,
+			surname: googleUser.family_name,
+			email: googleUser.email,
+			provider: 'google',
+		};
+		return createUser(newUser, res);
+	}
+
+	if (user.provider !== 'google') {
+		return res
+			.status(STATUS_CODES.BAD_REQUEST)
+			.send({ message: 'The email is already used without registering with Google.' });
+	}
+
+	const token = await tokenServices.generateToken(user);
+	await userService.updateToken(user._id, token);
+
+	res.header('x-auth-token', token)
+		.status(STATUS_CODES.OK)
+		.send({
+			...user,
+			accessToken: token,
+		});
+};
 
 const signIn = async (req, res) => {
 	try {
@@ -98,9 +121,13 @@ const signIn = async (req, res) => {
 		if (provider === 'email') {
 			return await signInEmail(req, res);
 		}
+		if (provider === 'google') {
+			return await signInGoogle(req, res);
+		}
 
 		return res.status(STATUS_CODES.BAD_REQUEST).send({ message: `Invalid provider: ${provider}` });
 	} catch (error) {
+		console.log(`!!!! error ${error}`);
 		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR)
 			.send({ message: error.message });
 	}
