@@ -8,6 +8,7 @@
     "heroku:start": "node src/index.js",
     "lint": "eslint ./src ./tests",
     "test": "export NODE_ENV=test && mocha --exit -R nyan --recursive tests/",
+    "test-win": "SET NODE_ENV=test && mocha --timeout 15000 --exit -R nyan --recursive tests/",
     "test-ci": "mocha --exit --recursive tests/",
     "coverage": "nyc npm test",
     "coverage:report": "nyc --reporter=lcov mocha --exit --recursive tests/"
