@@ -11,6 +11,7 @@ const adminUsersSignOut = require('./admin-users/sign_out');
 const getByIdAsAdmin = require('./admin-users/get_by_id');
 const getAllUsers = require('./admin-users/get_all_users');
 const getAdminById = require('./admin-users/get_admin_by_id');
+const status = require('./status/status');
 
 module.exports = {
 	paths: {
@@ -44,6 +45,9 @@ module.exports = {
 		},
 		'/auth-server/v1/admin/{id}': {
 			...getAdminById,
+		},
+		'/auth-server/v1/status': {
+			...status,
 		},
 	},
 };
