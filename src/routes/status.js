@@ -1,9 +1,9 @@
 'use strict';
 
 const express = require('express');
-const status = require('../controllers/status');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const status = require('../controllers/status');
 
 const router = express.Router();
 
