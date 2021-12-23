@@ -1,8 +1,10 @@
 'use strict';
 
+const StatsD = require('hot-shots');
 const { googleAuthClient, userService, TokenServices } = require('../services');
 const STATUS_CODES = require('../utils/status-codes.json');
 
+const dogstatsd = new StatsD();
 const tokenServices = new TokenServices();
 
 const createUser = async (userData, res) => {
@@ -24,7 +26,9 @@ const createUser = async (userData, res) => {
 const signUp = async (req, res) => {
 	try {
 		const userData = req.body;
-		return await createUser(userData, res);
+		const newUserResponse = await createUser(userData, res);
+		dogstatsd.increment('authserver.signup.email');
+		return newUserResponse;
 	} catch (error) {
 		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
 	}
@@ -56,6 +60,8 @@ const signInEmail = async (req, res) => {
 	const token = await tokenServices.generateToken(formattedUser);
 	await userService.updateToken(user._id, token);
 
+	dogstatsd.increment('authserver.signin.email');
+
 	res.header('x-auth-token', token)
 		.status(STATUS_CODES.OK)
 		.send({
@@ -85,13 +91,15 @@ const signInGoogle = async (req, res) => {
 	const user = await userService.getUserByEmail(googleUser.email);
 
 	if (!user) {
-		const newUser = {
+		const newUserData = {
 			name: googleUser.given_name,
 			surname: googleUser.family_name,
 			email: googleUser.email,
 			provider: 'google',
 		};
-		return createUser(newUser, res);
+		const newUserResponse = await createUser(newUserData, res);
+		dogstatsd.increment('authserver.signup.google');
+		return newUserResponse;
 	}
 
 	if (user.provider !== 'google') {
@@ -102,6 +110,8 @@ const signInGoogle = async (req, res) => {
 
 	const token = await tokenServices.generateToken(user);
 	await userService.updateToken(user._id, token);
+
+	dogstatsd.increment('authserver.signin.google');
 
 	res.header('x-auth-token', token)
 		.status(STATUS_CODES.OK)
