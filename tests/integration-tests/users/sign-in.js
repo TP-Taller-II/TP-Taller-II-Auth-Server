@@ -233,7 +233,7 @@ describe('Users', async () => {
 			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeGoogleUser.email);
 		});
 
-		it('Should set status code 200 when user is valid !!!!', async () => {
+		it('Should set status code 200 when user is a valid Google user', async () => {
 
 			sandbox.stub(Model.prototype, 'findBy').resolves([fakeGoogleUser]);
 			sandbox.stub(axios, 'get')
