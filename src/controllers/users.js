@@ -1,6 +1,6 @@
 'use strict';
 
-const { googleAuthClient, userService, TokenServices } = require('../services/index'); // !!!!
+const { googleAuthClient, userService, TokenServices } = require('../services');
 const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
@@ -75,10 +75,8 @@ const signInGoogle = async (req, res) => {
 
 	try {
 		googleUser = await googleAuthClient.validateIdToken(googleIdToken);
-
-		console.log(`!!!! googleUser ${googleUser}`);
 	} catch (error) {
-		console.log(`!!!! Error validating Google idToken: ${error}`);
+		console.log(`Error validating Google idToken: ${error}`);
 		return res
 			.status(STATUS_CODES.BAD_REQUEST)
 			.send({ message: 'Error validating Google idToken.' });
@@ -127,7 +125,6 @@ const signIn = async (req, res) => {
 
 		return res.status(STATUS_CODES.BAD_REQUEST).send({ message: `Invalid provider: ${provider}` });
 	} catch (error) {
-		console.log(`!!!! error ${error}`);
 		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR)
 			.send({ message: error.message });
 	}
