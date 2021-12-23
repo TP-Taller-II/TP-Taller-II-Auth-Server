@@ -245,7 +245,6 @@ describe('Users', async () => {
 			const res = await chai.request(app).post('/auth-server/v1/users/signIn')
 				.send(fakeGoogleUserRequest);
 			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
-			console.log(`!!!! res.body ${JSON.stringify(res.body)}`);
 			assert.deepStrictEqual(res.body, { ...fakeGoogleUser, accessToken: 'fakeToken' });
 
 			sandbox.assert.calledOnce(axios.get);
