@@ -11,9 +11,6 @@ RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 D75CEA1704
 # Install the Datadog agent
 RUN apt-get update && apt-get -y --force-yes install --reinstall datadog-agent
 
-#RUN DD_AGENT_MAJOR_VERSION=7 DD_API_KEY= DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
-
-
 WORKDIR /app
 COPY package*.json ./
 
