@@ -22,7 +22,7 @@ RUN npm install --production
 COPY . .
 
 # Copy Datadog configuration
-# COPY datadog-config/ /etc/datadog-agent/
+COPY datadog-config/ /etc/datadog-agent/
 
 EXPOSE $PORT
 CMD [ "npm", "run", "heroku:start" ]
