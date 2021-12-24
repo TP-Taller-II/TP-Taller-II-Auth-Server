@@ -1,8 +1,6 @@
 'use strict';
 
 // This line must come before importing any instrumented module.
-// !!!!
-// const tracer = require('dd-trace').init();
 require('dd-trace').init();
 
 const Express = require('express');
