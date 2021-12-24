@@ -8,6 +8,6 @@ config_providers:
     polling: true
     poll_interval: 1s
 process_config:
-  enabled: 'true'
+    enabled: 'true'
 
 python_version: 3

@@ -1,7 +1,7 @@
 FROM node:12
 
 ENV DD_ENV "prod"
-# ARG DD_API_KEY
+RUN apt-get update && apt-get -y install vim net-tools
 
 # Add Datadog repository and signing keys
 RUN sh -c "echo 'deb https://apt.datadoghq.com/ stable 7' > /etc/apt/sources.list.d/datadog.list"
@@ -11,7 +11,8 @@ RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 D75CEA1704
 # Install the Datadog agent
 RUN apt-get update && apt-get -y --force-yes install --reinstall datadog-agent
 
-# RUN DD_AGENT_MAJOR_VERSION=7 DD_API_KEY=<> DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+#RUN DD_AGENT_MAJOR_VERSION=7 DD_API_KEY= DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script.sh)"
+
 
 WORKDIR /app
 COPY package*.json ./
@@ -22,7 +23,8 @@ RUN npm install --production
 COPY . .
 
 # Copy Datadog configuration
-COPY datadog-config/ /etc/datadog-agent/
+COPY heroku/datadog-config/ /etc/datadog-agent/
 
 EXPOSE $PORT
-CMD [ "npm", "run", "heroku:start" ]
+# Use heroku entrypoint
+CMD ["/app/heroku/heroku-entrypoint.sh"]
