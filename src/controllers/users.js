@@ -1,6 +1,6 @@
 'use strict';
 
-const { googleAuthClient, userService, TokenServices, metricService } = require('../services');
+const { googleAuthClient, userService, TokenServices, metricService, adminUserService } = require('../services');
 const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
@@ -162,7 +162,12 @@ const getMe = async (req, res) => {
 
 	try {
 
-		const { password, token, ...user } = await userService.getUserById(_id);
+		let foundUser = await userService.getUserById(_id);
+
+		if (!foundUser)
+			foundUser = await adminUserService.getAdminUserById(_id);
+
+		const { password, token, ...user } = foundUser;
 
 		res.status(STATUS_CODES.OK).send(user);
 	} catch (error) {
