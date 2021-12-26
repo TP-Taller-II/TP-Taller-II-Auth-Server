@@ -1,6 +1,8 @@
 'use strict';
 
-const { googleAuthClient, userService, TokenServices, metricService, adminUserService } = require('../services');
+const {
+	googleAuthClient, userService, TokenServices, metricService, adminUserService,
+} = require('../services');
 const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
