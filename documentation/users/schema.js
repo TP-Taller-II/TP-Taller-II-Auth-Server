@@ -36,12 +36,6 @@ module.exports = {
 				required: true,
 				example: 'joe_doe@gmail.com',
 			},
-			birthDate: {
-				type: 'string',
-				description: 'The date when the user was born',
-				format: 'date-time',
-				example: '2017-07-21T17:32:28Z',
-			},
 			profilePic: {
 				type: 'string',
 				description: 'The user\'s profile picture.',

@@ -89,6 +89,7 @@ const signInGoogle = async (req, res) => {
 			name: googleUser.given_name,
 			surname: googleUser.family_name,
 			email: googleUser.email,
+			profilePic: googleUser.picture,
 			provider: 'google',
 		};
 		return createUser(newUser, res);

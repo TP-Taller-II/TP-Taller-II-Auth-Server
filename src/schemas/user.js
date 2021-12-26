@@ -32,11 +32,6 @@ const userSchema = new mongoose.Schema(
 			required: [true, 'Email address is required'],
 			match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
 		},
-		birthDate: {
-			type: Date,
-			// eslint-disable-next-line no-unused-expressions
-			required: [function() { this.provider === 'email'; }, 'A password is required'],
-		},
 		accessToken: {
 			type: String,
 		},

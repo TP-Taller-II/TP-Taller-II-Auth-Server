@@ -32,7 +32,6 @@ describe('Users', async () => {
 		_id: '60456ebb0190bf001f6bbee2',
 		name: 'Userfirstname',
 		surname: 'Userlastname',
-		birthDate: '1996-08-03T00:00:00.000Z',
 		email: 'some.email@hotmail.com',
 		password: '$2b$10$FVLh9oI6betv13edzE9cQuNbXVFqTu3pp3MfKP9mp9Uv/rVXQuDf6',
 		provider: 'email',
@@ -210,9 +209,16 @@ describe('Users', async () => {
 			assert.deepStrictEqual(res.status, STATUS_CODES.OK);
 			assert.deepStrictEqual(res.body, { ...fakeGoogleUser, accessToken: 'fakeToken' });
 
+			const modelCreateObject = {
+				name: googleUserValidationResponse.given_name,
+				surname: googleUserValidationResponse.family_name,
+				email: googleUserValidationResponse.email,
+				profilePic: googleUserValidationResponse.picture,
+				provider: 'google',
+			};
 			sandbox.assert.calledOnce(axios.get);
 			sandbox.assert.calledOnceWithExactly(Model.prototype.findBy, 'email', fakeGoogleUser.email);
-			sandbox.assert.calledOnce(Model.prototype.create);
+			sandbox.assert.calledOnceWithExactly(Model.prototype.create, modelCreateObject);
 			sandbox.assert.calledOnce(TokenServices.prototype.generateToken);
 			sandbox.assert.calledOnce(Model.prototype.update);
 		});
