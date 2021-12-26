@@ -31,7 +31,6 @@ describe('Users', async () => {
 		_id: '60456ebb0190bf001f6bbee2',
 		name: 'Userfirstname',
 		surname: 'Userlastname',
-		birthDate: '1996-08-03T00:00:00.000Z',
 		email: 'some.email@hotmail.com',
 		password: '$2b$10$FVLh9oI6betv13edzE9cQuNbXVFqTu3pp3MfKP9mp9Uv/rVXQuDf6',
 		provider: 'email',
