@@ -4,6 +4,7 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const sandbox = require('sinon').createSandbox();
+const StatsD = require('hot-shots');
 
 const { TokenServices } = require('../../../src/services');
 const Model = require('../../../src/databases/mongodb/model');
@@ -46,6 +47,7 @@ describe('Users', async () => {
 			sandbox.stub(Model.prototype, 'create').resolves(fakeUser);
 			sandbox.stub(TokenServices.prototype, 'generateToken').returns('fakeToken');
 			sandbox.stub(Model.prototype, 'update').resolves(true);
+			sandbox.stub(StatsD.prototype, 'increment').resolves(null);
 
 			const res = await chai.request(app).post('/auth-server/v1/users/signUp')
 				.send(fakeUser);
@@ -53,9 +55,10 @@ describe('Users', async () => {
 			const { password, ...formattedUser } = fakeUser;
 			assert.deepStrictEqual(res.body, { ...formattedUser, accessToken: 'fakeToken' });
 
+			sandbox.assert.notCalled(StatsD.prototype.increment);
 			sandbox.assert.calledOnce(Model.prototype.create);
-			sandbox.assert.calledOnce(TokenServices.prototype.generateToken);
 			sandbox.assert.calledOnce(Model.prototype.update);
+			sandbox.assert.calledOnce(TokenServices.prototype.generateToken);
 		});
 
 		it('Should set status code 500 when database fails', async () => {

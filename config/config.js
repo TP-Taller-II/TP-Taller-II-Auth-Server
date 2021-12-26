@@ -14,6 +14,9 @@ const defaultConfig = {
 	auth: {
 		jwtSigningSecret: 'puchero12',
 	},
+	metric: {
+		enabled: false,
+	},
 };
 
 const dev = {
@@ -42,6 +45,9 @@ const prod = {
 	},
 	auth: {
 		jwtSigningSecret: process.env.JWT_SIGNING_SECRET,
+	},
+	metric: {
+		enabled: true,
 	},
 };
 

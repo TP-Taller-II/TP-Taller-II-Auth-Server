@@ -1,6 +1,8 @@
 'use strict';
 
-const { googleAuthClient, userService, TokenServices, adminUserService } = require('../services');
+const {
+	googleAuthClient, userService, TokenServices, metricService, adminUserService,
+} = require('../services');
 const STATUS_CODES = require('../utils/status-codes.json');
 
 const tokenServices = new TokenServices();
@@ -24,7 +26,9 @@ const createUser = async (userData, res) => {
 const signUp = async (req, res) => {
 	try {
 		const userData = req.body;
-		return await createUser(userData, res);
+		const newUserResponse = await createUser(userData, res);
+		metricService.registerSignUpEmail();
+		return newUserResponse;
 	} catch (error) {
 		return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({ message: error.message });
 	}
@@ -56,6 +60,8 @@ const signInEmail = async (req, res) => {
 	const token = await tokenServices.generateToken(formattedUser);
 	await userService.updateToken(user._id, token);
 
+	metricService.registerSignInEmail();
+
 	res.header('x-auth-token', token)
 		.status(STATUS_CODES.OK)
 		.send({
@@ -85,14 +91,16 @@ const signInGoogle = async (req, res) => {
 	const user = await userService.getUserByEmail(googleUser.email);
 
 	if (!user) {
-		const newUser = {
+		const newUserData = {
 			name: googleUser.given_name,
 			surname: googleUser.family_name,
 			email: googleUser.email,
 			profilePic: googleUser.picture,
 			provider: 'google',
 		};
-		return createUser(newUser, res);
+		const newUserResponse = await createUser(newUserData, res);
+		metricService.registerSignUpGoogle();
+		return newUserResponse;
 	}
 
 	if (user.provider !== 'google') {
@@ -103,6 +111,8 @@ const signInGoogle = async (req, res) => {
 
 	const token = await tokenServices.generateToken(user);
 	await userService.updateToken(user._id, token);
+
+	metricService.registerSignInGoogle();
 
 	res.header('x-auth-token', token)
 		.status(STATUS_CODES.OK)
