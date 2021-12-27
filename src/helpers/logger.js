@@ -28,48 +28,6 @@ const options = {
 	},
 };
 
-// function logger() {
-// 	// eslint-disable-next-line no-shadow,global-require
-//
-//
-// 	// Console logger
-// 	innerLogger.remove(innerLogger.transports.Console);
-// 	innerLogger.add(innerLogger.transports.Console, {
-// 		level: 'info',
-// 		levels: options.levels,
-// 		handleExceptions: true,
-// 		colorize: options.colorize,
-// 		timestamp: true,
-// 		prettyPrint: true,
-// 		label: options.label,
-// 	});
-//
-// 	// Syslog logger
-// 	if (options.syslog) {
-// 		innerLogger.info('adding syslog transport');
-// 		if (!options.syslog.added) {
-// 			options.syslog.added = true;
-// 			/* eslint-disable */
-//       require('winston-syslog').Syslog;
-//       innerLogger.add(innerLogger.transports.Syslog, options.syslog);
-//       /* eslint-enable */
-// 		}
-// 	}
-//
-// 	innerLogger.stream = {
-// 		write(message) {
-// 			innerLogger.info(message);
-// 		},
-// 	};
-//
-// 	// Log levels and colors
-// 	innerLogger.setLevels(options.levels);
-// 	innerLogger.addColors(options.colors);
-//
-// 	return innerLogger;
-// }();
-
-
 // eslint-disable-next-line new-cap
 const logger = new winston.createLogger({
 	transports: [
