@@ -11,6 +11,7 @@ const firebaseAdmin = require('firebase-admin');
 const routes = require('./routes/index');
 require('./startup/startup-mongo')();
 const options = require('../documentation/options');
+const logger = require('./helpers/logger');
 
 firebaseAdmin.initializeApp({
 	credential: firebaseAdmin.credential.applicationDefault(),
@@ -26,6 +27,6 @@ app.use('/auth-server/v1', routes);
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => console.log(`App listening on port ${port}`));
+app.listen(port, () => logger.info(`App listening on port ${port}`));
 
 module.exports = app;

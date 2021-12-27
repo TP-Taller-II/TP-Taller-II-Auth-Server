@@ -1,7 +1,5 @@
 'use strict';
 
-console.log('Time:', Date.now());
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');

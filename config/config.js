@@ -2,8 +2,6 @@
 
 const env = (process.env.NODE_ENV || 'dev').trim();
 
-console.log('Config Environment: ' + env);
-
 
 const defaultConfig = {
 	db: {
