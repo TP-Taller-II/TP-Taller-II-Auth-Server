@@ -1,6 +1,5 @@
 FROM node:12
 
-ENV DD_ENV "prod"
 RUN apt-get update && apt-get -y install vim net-tools
 
 # Add Datadog repository and signing keys
