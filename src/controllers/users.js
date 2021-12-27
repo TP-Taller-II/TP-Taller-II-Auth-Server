@@ -4,11 +4,12 @@ const {
 	googleAuthClient, userService, TokenServices, metricService, adminUserService,
 } = require('../services');
 const STATUS_CODES = require('../utils/status-codes.json');
+const logger = require('../helpers/logger');
 
 const tokenServices = new TokenServices();
 
 const createUser = async (userData, res) => {
-	console.log('UserController - createUser.');
+	logger.info('UserController - createUser.');
 	try {
 		const { password, ...user } = await userService.createUser(userData);
 		const token = await tokenServices.generateToken(user);
@@ -71,7 +72,7 @@ const signInEmail = async (req, res) => {
 };
 
 const signInGoogle = async (req, res) => {
-	console.log('UserController - signInGoogle');
+	logger.info('UserController - signInGoogle');
 
 	const {
 		googleIdToken,
@@ -82,7 +83,7 @@ const signInGoogle = async (req, res) => {
 	try {
 		googleUser = await googleAuthClient.validateIdToken(googleIdToken);
 	} catch (error) {
-		console.log(`Error validating Google idToken: ${error}`);
+		logger.warn(`Error validating Google idToken: ${error}`);
 		return res
 			.status(STATUS_CODES.BAD_REQUEST)
 			.send({ message: 'Error validating Google idToken.' });
